@@ -26,7 +26,7 @@ public class MealService {
     }
 
     public Meal deleteMeal(Long id) {
-        Meal meal = mealRepository.findById(id);
-        return mealRepository.delete(meal);
+        mealRepository.deleteById(id);
+        return null;
     }
 }

@@ -31,13 +31,7 @@ public class MealController {
     @DeleteMapping("/deleteMeal/{id}")
     public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long mealID)
             throws ResourceNotFoundException {
-
-        MealRepository mealRepository;
-
-        Meal meal = mealRepository.findById(mealID);
-                .orElseThrow(() -> new ResourceNotFoundException("Meal not found for this id :: " + mealID));
-
-        mealService.deleteMeal(meal);
+        mealService.deleteMeal(mealID);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return response;
