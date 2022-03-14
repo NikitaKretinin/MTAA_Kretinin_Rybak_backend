@@ -1,5 +1,6 @@
 package fiit.mtaa.mtaa_backend.services;
 
+import fiit.mtaa.mtaa_backend.models.Order;
 import fiit.mtaa.mtaa_backend.models.OrderMeal;
 import fiit.mtaa.mtaa_backend.repositories.OrderMealRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -17,6 +17,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserById(Long id) {
+        return userRepository.getById(id);
+    }
+
     public User saveUser(User user) {
         if (UserRole.contains(user.getUser_role())){
             return userRepository.save(user);

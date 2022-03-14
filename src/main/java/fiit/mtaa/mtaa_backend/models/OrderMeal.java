@@ -21,4 +21,10 @@ public class OrderMeal {
     @ManyToOne
     @JoinColumn(name="meal_id", nullable=false, referencedColumnName="id")
     private Meal meal;
+
+    public OrderMeal setDependencies(Meal meal, Order order){
+        this.meal = meal;
+        this.order = order;
+        return this;
+    }
 }
