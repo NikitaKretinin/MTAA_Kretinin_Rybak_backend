@@ -24,9 +24,8 @@ public class Meal {
     @Column(name="price", nullable = false)
     private Integer price;
 
-//    @Column(name="photo")
-//    @Lob
-//    private byte[] photo;
+    @Column(name="photo")
+    private String photo;
 
     public String getName() {
         return name;

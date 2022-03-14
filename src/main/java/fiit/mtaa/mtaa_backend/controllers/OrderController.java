@@ -26,10 +26,10 @@ public class OrderController {
     @PostMapping("/addOrder")
     public Order addOrder(@RequestBody Order order) {
         Integer price = 0;
-        for (int i : order.getMeals()){
+        /*for (int i : order.getMeals()){
             Long id = (long) i;
             price += mealService.getMealById(id).get().getPrice();
-        }
+        }*/
         order.setPrice(price);
         Order res = orderService.saveOrder(order);
         return res;
