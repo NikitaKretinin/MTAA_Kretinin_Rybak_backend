@@ -2,6 +2,7 @@ package fiit.mtaa.mtaa_backend.services;
 
 import fiit.mtaa.mtaa_backend.artifacts_data.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.repositories.UserRepository;

@@ -29,18 +29,4 @@ public class Order {
 
     @Column(name="done", nullable = false)
     private Boolean done = false;
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public void setUser(User user){ this.user = user; }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public User getUser() {
-        return user;
-    }
 }

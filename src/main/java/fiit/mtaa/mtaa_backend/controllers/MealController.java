@@ -5,6 +5,7 @@ import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.repositories.MealRepository;
 import fiit.mtaa.mtaa_backend.services.MealService;
 import fiit.mtaa.mtaa_backend.services.UserService;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,16 @@ public class MealController {
     @PostMapping("/addMeal")
     public Meal addProduct(@RequestBody Meal meal) {
         return mealService.saveMeal(meal);
+    }
+
+    @GetMapping("/getMeal/{id}")
+    public JSONObject getMealById(@PathVariable(value = "id") Long mealID) {
+        Meal meal = mealService.getMealById(mealID).get();
+        JSONObject jo = new JSONObject();
+        jo.put("name", meal.getName());
+        jo.put("description", meal.getDescription());
+        jo.put("price", meal.getPrice());
+        return jo;
     }
 
     @DeleteMapping("/deleteMeal/{id}")

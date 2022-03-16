@@ -26,12 +26,4 @@ public class Meal {
 
     @Column(name="photo")
     private String photo;
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
 }

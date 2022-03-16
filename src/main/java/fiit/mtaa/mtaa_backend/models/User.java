@@ -22,12 +22,4 @@ public class User {
 
     @Column(name="user_role", nullable = false)
     private String user_role;
-
-    public String getUser_role() {
-        return user_role;
-    }
-
-    public String getLogin() {
-        return login;
-    }
 }
