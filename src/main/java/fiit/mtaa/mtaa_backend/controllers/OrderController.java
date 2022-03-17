@@ -38,7 +38,7 @@ public class OrderController {
         User user = userService.getUserById(userId);
         List<Meal> order_meals = new ArrayList<>();
         for (Long id : mealsId){
-            order_meals.add(mealService.getMealById(id).get());
+            order_meals.add(mealService.getMealById(id));
         }
         Order order = new Order();
         order.setUser(user);
@@ -50,7 +50,6 @@ public class OrderController {
         Order result = orderService.saveOrder(order);
         for (Meal meal : order_meals){
             orderMealService.saveOrderMeal(new OrderMeal().setDependencies(meal, result));
-//            result.addMeal(res);
         }
 
         JSONObject jo = new JSONObject();

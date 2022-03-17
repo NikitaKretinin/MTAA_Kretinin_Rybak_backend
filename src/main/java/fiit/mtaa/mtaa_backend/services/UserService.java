@@ -2,13 +2,8 @@ package fiit.mtaa.mtaa_backend.services;
 
 import fiit.mtaa.mtaa_backend.artifacts_data.HibernateUtil;
 import fiit.mtaa.mtaa_backend.artifacts_data.UserRole;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.repositories.UserRepository;
@@ -25,13 +20,15 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.getById(id);
+        return userRepository.findById(id).get();
     }
 
     public User getUserByLogin(String login) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         return session.createQuery("SELECT a FROM User a WHERE a.login=:login", User.class).setParameter("login", login).getSingleResult();
     }
+
+    public User updateUser(User user) { return userRepository.save(user); }
 
     public User saveUser(User user) {
         if (UserRole.contains(user.getUser_role())){

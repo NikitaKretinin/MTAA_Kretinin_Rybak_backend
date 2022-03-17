@@ -1,7 +1,12 @@
 package fiit.mtaa.mtaa_backend.services;
 
+import fiit.mtaa.mtaa_backend.artifacts_data.HibernateUtil;
+import fiit.mtaa.mtaa_backend.models.Contact;
 import fiit.mtaa.mtaa_backend.models.Meal;
+import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.repositories.MealRepository;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +22,8 @@ public class MealService {
         return mealRepository.findAll();
     }
 
-    public Optional<Meal> getMealById(Long id) {
-        return mealRepository.findById(id);
+    public Meal getMealById(Long id) {
+        return mealRepository.findById(id).get();
     }
 
     public Meal saveMeal(Meal meal) {

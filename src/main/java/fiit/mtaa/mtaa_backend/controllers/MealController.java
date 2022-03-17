@@ -1,5 +1,6 @@
 package fiit.mtaa.mtaa_backend.controllers;
 
+import fiit.mtaa.mtaa_backend.models.Contact;
 import fiit.mtaa.mtaa_backend.models.Meal;
 import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.repositories.MealRepository;
@@ -8,6 +9,8 @@ import fiit.mtaa.mtaa_backend.services.UserService;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -25,26 +28,60 @@ public class MealController {
     }
 
     @PostMapping("/addMeal")
-    public Meal addProduct(@RequestBody Meal meal) {
-        return mealService.saveMeal(meal);
+    public ResponseEntity<Meal> addProduct(@RequestBody Meal meal) {
+        try {
+            Meal result = mealService.saveMeal(meal);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/getMeal/{id}")
-    public JSONObject getMealById(@PathVariable(value = "id") Long mealID) {
-        Meal meal = mealService.getMealById(mealID).get();
-        JSONObject jo = new JSONObject();
-        jo.put("name", meal.getName());
-        jo.put("description", meal.getDescription());
-        jo.put("price", meal.getPrice());
-        return jo;
+    public ResponseEntity<Meal> getMealById(@PathVariable(value = "id") Long mealID)
+            throws ResourceNotFoundException {
+        try {
+            Meal meal = mealService.getMealById(mealID);
+            return new ResponseEntity<>(meal, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
-    @DeleteMapping("/deleteMeal/{id}")
-    public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long mealID)
+    @DeleteMapping("/delMeal/{id}")
+    public ResponseEntity<String> deleteEmployee(@PathVariable(value = "id") Long mealID)
             throws ResourceNotFoundException {
-        mealService.deleteMeal(mealID);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
+        try {
+            mealService.deleteMeal(mealID);
+            return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/editMeal/{id}")
+    public ResponseEntity<Meal> editUser(@RequestBody (required=false) Meal meal, @PathVariable(value = "id") Long mealID) {
+        try {
+            if (meal == null) { // if json body of request is empty
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+            Meal edit_meal = mealService.getMealById(mealID);
+            if (meal.getName() != null) {
+                edit_meal.setName(meal.getName());
+            }
+            if (meal.getDescription() != null) {
+                edit_meal.setDescription(meal.getDescription());
+            }
+            if (meal.getPrice() != null) {
+                edit_meal.setPrice(meal.getPrice());
+            }
+            if (meal.getPhoto() != null) {
+                edit_meal.setPhoto(meal.getPhoto());
+            }
+            edit_meal = mealService.saveMeal(edit_meal);
+            return new ResponseEntity<>(edit_meal, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 }
