@@ -1,6 +1,11 @@
 package fiit.mtaa.mtaa_backend.services;
 
+import fiit.mtaa.mtaa_backend.artifacts_data.HibernateUtil;
 import fiit.mtaa.mtaa_backend.artifacts_data.UserRole;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,14 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.getById(id);
+    }
+
+    public User getUserByLogin(String login) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+        User user = session.get(User.class, )
+        Criteria criteria = session.createCriteria(User.class);
+        return (User) criteria.add(Restrictions.eq("login", login)).uniqueResult();
     }
 
     public User saveUser(User user) {

@@ -29,6 +29,17 @@ public class UserController {
         return jo;
     }
 
+    @GetMapping("/getUser")
+    public JSONObject getUserByLogin(@RequestParam String login) {
+        User user = userService.getUserByLogin(login);
+        JSONObject jo = new JSONObject();
+        jo.put("login", user.getLogin());
+        jo.put("password", user.getPassword());
+        jo.put("user_role", user.getUser_role());
+        jo.put("id", user.getId());
+        return jo;
+    }
+
     @PostMapping("/addUser")
     public JSONObject addProduct(@RequestBody User user) {
         userService.saveUser(user);
