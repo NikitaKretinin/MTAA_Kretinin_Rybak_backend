@@ -30,13 +30,7 @@ public class UserService {
 
     public User getUserByLogin(String login) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        Query<User> query = session.createQuery("from User u where u.login = :login", User.class);
-        query.setParameter("login", login);
-        User user = query.uniqueResult();
-        session.getTransaction().commit();
-        HibernateUtil.getSessionFactory().close();
-        return user;
+        return session.createQuery("SELECT a FROM User a WHERE a.login=:login", User.class).setParameter("login", login).getSingleResult();
     }
 
     public User saveUser(User user) {

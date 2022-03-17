@@ -1,17 +1,24 @@
 package fiit.mtaa.mtaa_backend.controllers;
 
+import fiit.mtaa.mtaa_backend.services.ContactService;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.services.UserService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private ContactService contactService;
 
     @GetMapping("/getUsers")
     public List<User> getAllUsers() {
@@ -19,35 +26,24 @@ public class UserController {
     }
 
     @GetMapping("/getUser/{id}")
-    public JSONObject getUser(@PathVariable(value = "id") Long userID) {
+    public User getUser(@PathVariable(value = "id") Long userID) {
         User user = userService.getUserById(userID);
-        JSONObject jo = new JSONObject();
-        jo.put("login", user.getLogin());
-        jo.put("password", user.getPassword());
-        jo.put("user_role", user.getUser_role());
-        jo.put("id", user.getId());
-        return jo;
+        return user;
     }
 
     @GetMapping("/getUser")
-    public JSONObject getUserByLogin(@RequestParam String login) {
+    public User getUserByLogin(@RequestParam String login) {
         User user = userService.getUserByLogin(login);
-        JSONObject jo = new JSONObject();
-        jo.put("login", user.getLogin());
-        jo.put("password", user.getPassword());
-        jo.put("user_role", user.getUser_role());
-        jo.put("id", user.getId());
-        return jo;
+        return user;
     }
 
     @PostMapping("/addUser")
-    public JSONObject addProduct(@RequestBody User user) {
-        userService.saveUser(user);
-        JSONObject jo = new JSONObject();
-        jo.put("login", user.getLogin());
-        jo.put("password", user.getPassword());
-        jo.put("user_role", user.getUser_role());
-        return jo;
+    public User addProduct(@RequestBody User user) {
+        if (user.getContact() != null) {
+            contactService.saveContact(user.getContact());
+        }
+        User saved = userService.saveUser(user);
+        return saved;
     }
 
 }

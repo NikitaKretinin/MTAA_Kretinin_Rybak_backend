@@ -2,16 +2,12 @@ package fiit.mtaa.mtaa_backend.models;
 
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
 
 @Data
 @Table(name="users")
 @Entity
-@SpringBootApplication
-@EntityScan (basePackages = {"fiit.mtaa.mtaa_backend.models"})
 public class User {
 
     @Id
@@ -28,4 +24,8 @@ public class User {
 
     @Column(name="user_role", nullable = false)
     private String user_role;
+
+    @ManyToOne
+    @JoinColumn(name="contact_id", referencedColumnName="id")
+    private Contact contact = null;
 }
