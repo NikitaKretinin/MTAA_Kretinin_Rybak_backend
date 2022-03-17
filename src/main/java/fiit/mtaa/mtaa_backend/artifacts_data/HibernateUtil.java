@@ -1,5 +1,6 @@
 package fiit.mtaa.mtaa_backend.artifacts_data;
 
+import com.fasterxml.classmate.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -7,6 +8,10 @@ public class HibernateUtil {
     private static final SessionFactory sessionFactory;
     static {
         try {
+            Configuration cfg = new Configuration();
+            cfg.setProperty("hibernate.connection.password", System.getenv("SPRING_DATASOURCE_PASSWORD"));
+            cfg.setProperty("hibernate.connection.username", System.getenv("SPRING_DATASOURCE_USERNAME"));
+            cfg.setProperty("hibernate.connection.url", System.getenv("SPRING_DATASOURCE_URL"));
             sessionFactory = new Configuration().configure()
                     .buildSessionFactory();
         } catch (Throwable ex) {

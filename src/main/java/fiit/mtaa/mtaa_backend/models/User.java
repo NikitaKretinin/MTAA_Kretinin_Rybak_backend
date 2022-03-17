@@ -1,12 +1,17 @@
 package fiit.mtaa.mtaa_backend.models;
 
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
 
 @Data
 @Table(name="users")
 @Entity
+@SpringBootApplication
+@EntityScan (basePackages = {"fiit.mtaa.mtaa_backend.models"})
 public class User {
 
     @Id
@@ -14,6 +19,7 @@ public class User {
     @Column(name="id", nullable = false)
     private Long id;
 
+    @NaturalId
     @Column(name="login", unique=true, nullable = false)
     private String login;
 
