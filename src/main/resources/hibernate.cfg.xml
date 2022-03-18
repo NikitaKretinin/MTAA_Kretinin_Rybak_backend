@@ -12,20 +12,6 @@
             org.postgresql.Driver
         </property>
 
-        <!-- Assume test is the database name -->
-
-        <property name = "hibernate.connection.url">
-            jdbc:postgresql://localhost:5432/mtaa?currentSchema=mtaa
-        </property>
-
-        <property name = "hibernate.connection.username">
-            postgres
-        </property>
-
-        <property name = "hibernate.connection.password">
-            admin
-        </property>
-
         <property name="hibernate.current_session_context_class">
             thread
         </property>

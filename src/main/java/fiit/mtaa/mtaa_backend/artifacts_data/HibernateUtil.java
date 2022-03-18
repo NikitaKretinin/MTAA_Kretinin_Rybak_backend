@@ -12,7 +12,7 @@ public class HibernateUtil {
             cfg.setProperty("hibernate.connection.password", System.getenv("SPRING_DATASOURCE_PASSWORD"));
             cfg.setProperty("hibernate.connection.username", System.getenv("SPRING_DATASOURCE_USERNAME"));
             cfg.setProperty("hibernate.connection.url", System.getenv("SPRING_DATASOURCE_URL"));
-            sessionFactory = new Configuration().configure()
+            sessionFactory = cfg.configure()
                     .buildSessionFactory();
         } catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed." + ex);
