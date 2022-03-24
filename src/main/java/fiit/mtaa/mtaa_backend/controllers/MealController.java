@@ -12,6 +12,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,10 @@ public class MealController {
     }
 
     @PostMapping("/addMeal")
-    public ResponseEntity<Meal> addProduct(@RequestBody Meal meal) {
+    public ResponseEntity<Meal> addProduct(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
         try {
+            byte[] bytearr = file.getBytes();
+            meal.setPhoto(bytearr);
             Meal result = mealService.saveMeal(meal);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {

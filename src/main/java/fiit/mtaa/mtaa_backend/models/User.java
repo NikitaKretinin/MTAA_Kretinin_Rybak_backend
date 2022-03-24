@@ -23,7 +23,7 @@ public class User {
     private String password;
 
     @Column(name="user_role", nullable = false)
-    private String user_role;
+    private String user_role = "guest";
 
     @ManyToOne
     @JoinColumn(name="contact_id", referencedColumnName="id")

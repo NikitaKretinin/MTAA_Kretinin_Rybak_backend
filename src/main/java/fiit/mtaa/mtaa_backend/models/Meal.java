@@ -25,5 +25,5 @@ public class Meal {
     private Integer price;
 
     @Column(name="photo")
-    private String photo;
+    private byte[] photo;
 }

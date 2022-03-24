@@ -10,6 +10,9 @@ import fiit.mtaa.mtaa_backend.services.OrderService;
 import fiit.mtaa.mtaa_backend.services.UserService;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -64,5 +67,16 @@ public class OrderController {
     public boolean addOrder(@PathVariable(value = "id") Long orderID) {
         orderService.deleteOrder(orderID);
         return true;
+    }
+
+    @GetMapping("/getOrder/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable(value = "id") Long orderID)
+            throws ResourceNotFoundException {
+        try {
+            Order order = orderService.getOrderById(orderID);
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 }
