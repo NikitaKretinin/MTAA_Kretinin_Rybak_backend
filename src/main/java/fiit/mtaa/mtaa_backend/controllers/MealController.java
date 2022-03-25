@@ -31,8 +31,10 @@ public class MealController {
     @PostMapping("/addMeal")
     public ResponseEntity<Meal> addMeal(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
         try {
-            byte[] bytearr = file.getBytes();
-            meal.setPhoto(bytearr);
+            if (file != null) {
+                byte[] bytearr = file.getBytes();
+                meal.setPhoto(bytearr);
+            }
             Meal result = mealService.saveMeal(meal);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
