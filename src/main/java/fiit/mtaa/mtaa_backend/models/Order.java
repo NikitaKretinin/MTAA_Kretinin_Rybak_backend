@@ -27,6 +27,9 @@ public class Order {
     @OneToMany(mappedBy="order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderMeal> orderMeals = new ArrayList<>();
 
+    @Column(name="pay_by_cash", nullable = false)
+    private boolean pay_by_cash;
+
     @Column(name="done", nullable = false)
     private Boolean done = false;
 }

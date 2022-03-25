@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @PostMapping("/addOrder")
-    public JSONObject addOrder(@RequestParam List<Long> mealsId, @RequestParam Long userId) {
+    public JSONObject addOrder(@RequestParam List<Long> mealsId, @RequestParam Long userId, @RequestParam boolean pay_by_cash) {
         User user = userService.getUserById(userId);
         List<Meal> order_meals = new ArrayList<>();
         for (Long id : mealsId){
@@ -45,6 +45,7 @@ public class OrderController {
         }
         Order order = new Order();
         order.setUser(user);
+        order.setPay_by_cash(pay_by_cash);
         Integer price = 0;
         for (Meal meal : order_meals){
             price += meal.getPrice();
@@ -64,7 +65,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/delOrder/{id}")
-    public boolean addOrder(@PathVariable(value = "id") Long orderID) {
+    public boolean delOrder(@PathVariable(value = "id") Long orderID) {
         orderService.deleteOrder(orderID);
         return true;
     }
@@ -75,6 +76,28 @@ public class OrderController {
         try {
             Order order = orderService.getOrderById(orderID);
             return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/setOrderDone/{id}")
+    public ResponseEntity<Order> setOrderDone(@PathVariable(value = "id") Long orderID) {
+        try {
+            Order edit_order = orderService.getOrderById(orderID);
+            edit_order.setDone(true);
+            edit_order = orderService.saveOrder(edit_order);
+            return new ResponseEntity<>(edit_order, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getUndoneOrders")
+    public ResponseEntity<List<Order>> getUndoneOrders() {
+        try {
+            List<Order> orders = orderService.getUndoneOrders();
+            return new ResponseEntity<>(orders, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

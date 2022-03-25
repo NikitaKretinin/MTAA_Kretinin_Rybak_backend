@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<User> addProduct(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody User user) {
         try {
             if (user.getContact() != null) {
                 contactService.saveContact(user.getContact());

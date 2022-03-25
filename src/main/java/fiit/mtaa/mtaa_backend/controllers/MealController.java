@@ -29,7 +29,7 @@ public class MealController {
     }
 
     @PostMapping("/addMeal")
-    public ResponseEntity<Meal> addProduct(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
+    public ResponseEntity<Meal> addMeal(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
         try {
             byte[] bytearr = file.getBytes();
             meal.setPhoto(bytearr);
@@ -52,7 +52,7 @@ public class MealController {
     }
 
     @DeleteMapping("/delMeal/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable(value = "id") Long mealID)
+    public ResponseEntity<String> deleteMeal(@PathVariable(value = "id") Long mealID)
             throws ResourceNotFoundException {
         try {
             mealService.deleteMeal(mealID);
@@ -63,7 +63,7 @@ public class MealController {
     }
 
     @PutMapping("/editMeal/{id}")
-    public ResponseEntity<Meal> editUser(@RequestBody (required=false) Meal meal, @PathVariable(value = "id") Long mealID) {
+    public ResponseEntity<Meal> editMeal(@RequestBody (required=false) Meal meal, @PathVariable(value = "id") Long mealID) {
         try {
             if (meal == null) { // if json body of request is empty
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

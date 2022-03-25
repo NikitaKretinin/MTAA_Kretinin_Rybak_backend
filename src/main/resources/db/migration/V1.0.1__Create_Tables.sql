@@ -17,13 +17,14 @@ CREATE TABLE IF NOT EXISTS meals (
     name VARCHAR UNIQUE NOT NULL,
     description VARCHAR NOT NULL,
     price INTEGER NOT NULL,
-    photo VARCHAR
+    photo bytea
 );
 
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     price INTEGER DEFAULT 0 NOT NULL,
+    pay_by_cash BOOLEAN NOT NULL,
     done BOOLEAN DEFAULT FALSE NOT NULL,
     CONSTRAINT FK_PersonOrder
         FOREIGN KEY (user_id)
