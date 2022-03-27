@@ -30,11 +30,11 @@ public class UserService {
 
     public User updateUser(User user) { return userRepository.save(user); }
 
-    public User saveUser(User user) {
+    public User saveUser(User user) throws Exception {
         if (UserRole.contains(user.getUser_role())){
             return userRepository.save(user);
         } else {
-            return null;
+            throw new Exception("Wrong role");
         }
     }
 }

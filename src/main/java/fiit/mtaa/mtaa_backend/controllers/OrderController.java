@@ -32,8 +32,19 @@ public class OrderController {
     private OrderMealService orderMealService;
 
     @GetMapping("/getOrders")
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
+    public Object getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        List<JSONObject> result = new ArrayList<>();
+        for (Order o: orders) {
+            JSONObject jo = new JSONObject();
+            jo.put("id", o.getId());
+            jo.put("price", o.getPrice());
+            jo.put("user", o.getUser().getLogin());
+            jo.put("pay_by_cash", o.isPay_by_cash());
+            jo.put("done", o.getDone());
+            result.add(jo);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/addOrder")
