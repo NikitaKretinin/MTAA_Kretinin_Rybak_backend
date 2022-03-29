@@ -18,5 +18,8 @@
 
         <mapping class="fiit.mtaa.mtaa_backend.models.User" />
         <mapping class="fiit.mtaa.mtaa_backend.models.Contact" />
+        <mapping class="fiit.mtaa.mtaa_backend.models.Order" />
+        <mapping class="fiit.mtaa.mtaa_backend.models.OrderMeal" />
+        <mapping class="fiit.mtaa.mtaa_backend.models.Meal" />
     </session-factory>
 </hibernate-configuration>

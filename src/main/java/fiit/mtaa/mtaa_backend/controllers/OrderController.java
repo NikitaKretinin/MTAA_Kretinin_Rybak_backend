@@ -82,33 +82,56 @@ public class OrderController {
     }
 
     @GetMapping("/getOrder/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable(value = "id") Long orderID)
+    public Object getOrderById(@PathVariable(value = "id") Long orderID)
             throws ResourceNotFoundException {
         try {
             Order order = orderService.getOrderById(orderID);
-            return new ResponseEntity<>(order, HttpStatus.OK);
+            JSONObject jo = new JSONObject();
+            jo.put("id", order.getId());
+            jo.put("price", order.getPrice());
+            jo.put("user", order.getUser().getLogin());
+            jo.put("pay_by_cash", order.isPay_by_cash());
+            jo.put("done", order.getDone());
+            return new ResponseEntity<>(jo, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/setOrderDone/{id}")
-    public ResponseEntity<Order> setOrderDone(@PathVariable(value = "id") Long orderID) {
+    public ResponseEntity<JSONObject> setOrderDone(@PathVariable(value = "id") Long orderID) {
         try {
             Order edit_order = orderService.getOrderById(orderID);
             edit_order.setDone(true);
             edit_order = orderService.saveOrder(edit_order);
-            return new ResponseEntity<>(edit_order, HttpStatus.OK);
+
+            JSONObject jo = new JSONObject();
+            jo.put("id", edit_order.getId());
+            jo.put("price", edit_order.getPrice());
+            jo.put("user", edit_order.getUser().getLogin());
+            jo.put("pay_by_cash", edit_order.isPay_by_cash());
+            jo.put("done", edit_order.getDone());
+            return new ResponseEntity<>(jo, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/getUndoneOrders")
-    public ResponseEntity<List<Order>> getUndoneOrders() {
+    public Object getUndoneOrders() {
         try {
             List<Order> orders = orderService.getUndoneOrders();
-            return new ResponseEntity<>(orders, HttpStatus.OK);
+            List<JSONObject> result = new ArrayList<>();
+            for (Order o: orders) {
+                JSONObject jo = new JSONObject();
+                jo.put("id", o.getId());
+                jo.put("price", o.getPrice());
+                jo.put("user", o.getUser().getLogin());
+                jo.put("pay_by_cash", o.isPay_by_cash());
+                jo.put("done", o.getDone());
+                result.add(jo);
+            }
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
