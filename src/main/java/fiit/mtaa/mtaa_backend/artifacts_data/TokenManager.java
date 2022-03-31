@@ -1,4 +1,4 @@
-package fiit.mtaa.mtaa_backend.services;
+package fiit.mtaa.mtaa_backend.artifacts_data;
 
 import fiit.mtaa.mtaa_backend.models.User;
 
@@ -23,12 +23,12 @@ public class TokenManager {
 
     static public String createToken(User user) {
         Random random = new Random();
-        StringBuilder key = new StringBuilder();
+        StringBuilder key = new StringBuilder("Bearer ");
         for (int i = 0; i<20; i++) {
-            key.append((char) (random.nextInt() % 25 + 97));
+            key.append((char) (random.nextInt(122-97) + 97));
         }
         UserData data = new UserData(user.getUser_role(), user.getLogin(), user.getId());
-        tokens.put(key.toString().toString(), data);
+        tokens.put(key.toString(), data);
         return key.toString();
     }
 
@@ -37,5 +37,13 @@ public class TokenManager {
             return true;
         }
         return (Objects.equals(tokens.get(token).role, requiredRole));
+    }
+
+    static public String getLoginByToken(String token) {
+        return tokens.get(token).login;
+    }
+
+    static public Long getIdByToken(String token) {
+        return tokens.get(token).id;
     }
 }

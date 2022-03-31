@@ -1,12 +1,8 @@
 package fiit.mtaa.mtaa_backend.controllers;
 
-import fiit.mtaa.mtaa_backend.models.Contact;
 import fiit.mtaa.mtaa_backend.models.Meal;
-import fiit.mtaa.mtaa_backend.models.User;
-import fiit.mtaa.mtaa_backend.repositories.MealRepository;
 import fiit.mtaa.mtaa_backend.services.MealService;
-import fiit.mtaa.mtaa_backend.services.UserService;
-import net.minidev.json.JSONObject;
+import fiit.mtaa.mtaa_backend.artifacts_data.TokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -14,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class MealController {
@@ -29,15 +23,20 @@ public class MealController {
     }
 
     @PostMapping("/addMeal")
-    public ResponseEntity<Meal> addMeal(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
+    public Object addMeal(@ModelAttribute Meal meal,
+                          @RequestPart(name="file", required = false) MultipartFile file,
+                          @RequestHeader(value="Authorization") String token) {
         try {
-
-            if (file != null) {
-                byte[] bytearr = file.getBytes();
-                meal.setPhoto(bytearr);
+            if (TokenManager.validToken(token, "manager")) {
+                if (file != null) {
+                    byte[] bytearr = file.getBytes();
+                    meal.setPhoto(bytearr);
+                }
+                Meal result = mealService.saveMeal(meal);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
             }
-            Meal result = mealService.saveMeal(meal);
-            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -55,37 +54,49 @@ public class MealController {
     }
 
     @DeleteMapping("/delMeal/{id}")
-    public ResponseEntity<String> deleteMeal(@PathVariable(value = "id") Long mealID)
+    public ResponseEntity<String> deleteMeal(@PathVariable(value = "id") Long mealID,
+                                             @RequestHeader(value="Authorization") String token)
             throws ResourceNotFoundException {
         try {
-            mealService.deleteMeal(mealID);
-            return new ResponseEntity<>("Deleted", HttpStatus.OK);
+            if (TokenManager.validToken(token, "manager")) {
+                mealService.deleteMeal(mealID);
+                return new ResponseEntity<>("Deleted", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/editMeal/{id}")
-    public ResponseEntity<Meal> editMeal(@RequestBody (required=false) Meal meal, @PathVariable(value = "id") Long mealID) {
+    public Object editMeal(@RequestBody (required=false) Meal meal,
+                           @PathVariable(value = "id") Long mealID,
+                           @RequestHeader(value="Authorization") String token) {
         try {
-            if (meal == null) { // if json body of request is empty
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            if (TokenManager.validToken(token, "manager")) {
+                if (meal == null) { // if json body of request is empty
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                }
+                Meal edit_meal = mealService.getMealById(mealID);
+                if (meal.getName() != null) {
+                    edit_meal.setName(meal.getName());
+                }
+                if (meal.getDescription() != null) {
+                    edit_meal.setDescription(meal.getDescription());
+                }
+                if (meal.getPrice() != null) {
+                    edit_meal.setPrice(meal.getPrice());
+                }
+                if (meal.getPhoto() != null) {
+                    edit_meal.setPhoto(meal.getPhoto());
+                }
+                edit_meal = mealService.saveMeal(edit_meal);
+                return new ResponseEntity<>(edit_meal, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
             }
-            Meal edit_meal = mealService.getMealById(mealID);
-            if (meal.getName() != null) {
-                edit_meal.setName(meal.getName());
-            }
-            if (meal.getDescription() != null) {
-                edit_meal.setDescription(meal.getDescription());
-            }
-            if (meal.getPrice() != null) {
-                edit_meal.setPrice(meal.getPrice());
-            }
-            if (meal.getPhoto() != null) {
-                edit_meal.setPhoto(meal.getPhoto());
-            }
-            edit_meal = mealService.saveMeal(edit_meal);
-            return new ResponseEntity<>(edit_meal, HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

@@ -2,7 +2,7 @@ package fiit.mtaa.mtaa_backend.controllers;
 
 import fiit.mtaa.mtaa_backend.models.Contact;
 import fiit.mtaa.mtaa_backend.services.ContactService;
-import fiit.mtaa.mtaa_backend.services.TokenManager;
+import fiit.mtaa.mtaa_backend.artifacts_data.TokenManager;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.services.UserService;
 
-import javax.print.attribute.Attribute;
 import java.util.*;
 
 @RestController
@@ -63,7 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/getToken")
-    public Object getUserByLogin(@RequestBody JSONObject req)
+    public Object getToken(@RequestBody JSONObject req)
             throws ResourceNotFoundException {
         try {
             String login = req.getAsString("login");
@@ -81,33 +80,38 @@ public class UserController {
         }
     }
 
-    @PutMapping("/editUser/{id}")
-    public ResponseEntity<User> editUser(@RequestBody (required=false) User user, @PathVariable(value = "id") Long userID) {
+    @PutMapping("/editUser/{token}")
+    public Object editUser(@RequestBody (required=false) User user,
+                           @RequestHeader(value = "Authorization") String token) {
         try {
-            if (user == null) { // if json body of request is empty
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-            User edit_user = userService.getUserById(userID);
-            if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-            if (user.getLogin() != null) {
-                edit_user.setLogin(user.getLogin());
-            }
-            if (user.getPassword() != null) {
-                edit_user.setPassword(user.getPassword());
-            }
-            if (user.getContact() != null) {
-                if (contactService.contactExists(user.getContact()) == 0){ // if contact doesn't exist
-                    contactService.saveContact(user.getContact());
-                    edit_user.setContact(user.getContact());
-                } else if (contactService.contactExists(user.getContact()) == 1) { // if contact is already in DB
-                    Contact new_cont = contactService.getContact(user.getContact());
-                    edit_user.setContact(new_cont);
+            if (TokenManager.validToken(token, "manager")) {
+                if (user == null) { // if json body of request is empty
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
                 }
+                User edit_user = userService.getUserById(TokenManager.getIdByToken(token));
+                if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                }
+                if (user.getLogin() != null) {
+                    edit_user.setLogin(user.getLogin());
+                }
+                if (user.getPassword() != null) {
+                    edit_user.setPassword(user.getPassword());
+                }
+                if (user.getContact() != null) {
+                    if (contactService.contactExists(user.getContact()) == 0){ // if contact doesn't exist
+                        contactService.saveContact(user.getContact());
+                        edit_user.setContact(user.getContact());
+                    } else if (contactService.contactExists(user.getContact()) == 1) { // if contact is already in DB
+                        Contact new_cont = contactService.getContact(user.getContact());
+                        edit_user.setContact(new_cont);
+                    }
+                }
+                edit_user = userService.updateUser(edit_user);
+                return new ResponseEntity<>(edit_user, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
             }
-            edit_user = userService.updateUser(edit_user);
-            return new ResponseEntity<>(edit_user, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
