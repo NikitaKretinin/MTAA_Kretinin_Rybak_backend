@@ -2,6 +2,7 @@ package fiit.mtaa.mtaa_backend.controllers;
 
 import fiit.mtaa.mtaa_backend.models.Contact;
 import fiit.mtaa.mtaa_backend.services.ContactService;
+import fiit.mtaa.mtaa_backend.services.TokenManager;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -12,10 +13,7 @@ import fiit.mtaa.mtaa_backend.models.User;
 import fiit.mtaa.mtaa_backend.services.UserService;
 
 import javax.print.attribute.Attribute;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class UserController {
@@ -61,6 +59,25 @@ public class UserController {
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getToken")
+    public Object getUserByLogin(@RequestBody JSONObject req)
+            throws ResourceNotFoundException {
+        try {
+            String login = req.getAsString("login");
+            String pass = req.getAsString("password");
+
+            User user = userService.getUserByLogin(login);
+
+            if (Objects.equals(user.getPassword(), pass)) {
+                return new ResponseEntity<>(TokenManager.createToken(user), HttpStatus.OK);
+            } else {
+                throw new ResourceNotFoundException("Not found");
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 

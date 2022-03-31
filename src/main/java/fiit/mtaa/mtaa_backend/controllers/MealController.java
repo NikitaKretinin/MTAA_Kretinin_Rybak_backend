@@ -31,6 +31,7 @@ public class MealController {
     @PostMapping("/addMeal")
     public ResponseEntity<Meal> addMeal(@ModelAttribute Meal meal, @RequestPart(name="file", required = false) MultipartFile file) {
         try {
+
             if (file != null) {
                 byte[] bytearr = file.getBytes();
                 meal.setPhoto(bytearr);
