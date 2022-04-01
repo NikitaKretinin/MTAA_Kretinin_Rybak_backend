@@ -71,7 +71,10 @@ public class UserController {
             User user = userService.getUserByLogin(login);
 
             if (Objects.equals(user.getPassword(), pass)) {
-                return new ResponseEntity<>(TokenManager.createToken(user), HttpStatus.OK);
+                JSONObject jo = new JSONObject();
+                jo.put("role", user.getUser_role());
+                jo.put("token", TokenManager.createToken(user));
+                return new ResponseEntity<>(jo, HttpStatus.OK);
             } else {
                 throw new ResourceNotFoundException("Not found");
             }
@@ -80,38 +83,34 @@ public class UserController {
         }
     }
 
-    @PutMapping("/editUser/{token}")
+    @PutMapping("/editUser")
     public Object editUser(@RequestBody (required=false) User user,
                            @RequestHeader(value = "Authorization") String token) {
         try {
-            if (TokenManager.validToken(token, "manager")) {
-                if (user == null) { // if json body of request is empty
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-                }
-                User edit_user = userService.getUserById(TokenManager.getIdByToken(token));
-                if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-                }
-                if (user.getLogin() != null) {
-                    edit_user.setLogin(user.getLogin());
-                }
-                if (user.getPassword() != null) {
-                    edit_user.setPassword(user.getPassword());
-                }
-                if (user.getContact() != null) {
-                    if (contactService.contactExists(user.getContact()) == 0){ // if contact doesn't exist
-                        contactService.saveContact(user.getContact());
-                        edit_user.setContact(user.getContact());
-                    } else if (contactService.contactExists(user.getContact()) == 1) { // if contact is already in DB
-                        Contact new_cont = contactService.getContact(user.getContact());
-                        edit_user.setContact(new_cont);
-                    }
-                }
-                edit_user = userService.updateUser(edit_user);
-                return new ResponseEntity<>(edit_user, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+            if (user == null) { // if json body of request is empty
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
+            User edit_user = userService.getUserById(TokenManager.getIdByToken(token));
+            if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+            if (user.getLogin() != null) {
+                edit_user.setLogin(user.getLogin());
+            }
+            if (user.getPassword() != null) {
+                edit_user.setPassword(user.getPassword());
+            }
+            if (user.getContact() != null) {
+                if (contactService.contactExists(user.getContact()) == 0){ // if contact doesn't exist
+                    contactService.saveContact(user.getContact());
+                    edit_user.setContact(user.getContact());
+                } else if (contactService.contactExists(user.getContact()) == 1) { // if contact is already in DB
+                    Contact new_cont = contactService.getContact(user.getContact());
+                    edit_user.setContact(new_cont);
+                }
+            }
+            edit_user = userService.updateUser(edit_user);
+            return new ResponseEntity<>(edit_user, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
