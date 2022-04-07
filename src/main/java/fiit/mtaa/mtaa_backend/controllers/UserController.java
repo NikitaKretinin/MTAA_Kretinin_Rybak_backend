@@ -91,6 +91,7 @@ public class UserController {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
             User edit_user = userService.getUserById(TokenManager.getIdByToken(token));
+            user.setUser_role(null);
             if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
