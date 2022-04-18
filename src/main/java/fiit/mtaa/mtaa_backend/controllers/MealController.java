@@ -24,13 +24,13 @@ public class MealController {
 
     @PostMapping("/addMeal")
     public Object addMeal(@ModelAttribute Meal meal,
-                          @RequestPart(name="file", required = false) MultipartFile file,
+                          @RequestPart(name="file", required = false) byte[] file,
                           @RequestHeader(value="Authorization") String token) {
         try {
             if (TokenManager.validToken(token, "manager")) {
                 if (file != null) {
-                    byte[] bytearr = file.getBytes();
-                    meal.setPhoto(bytearr);
+                    //byte[] bytearr = file.getBytes();
+                    meal.setPhoto(file);
                 }
                 Meal result = mealService.saveMeal(meal);
                 return new ResponseEntity<>(result, HttpStatus.OK);
