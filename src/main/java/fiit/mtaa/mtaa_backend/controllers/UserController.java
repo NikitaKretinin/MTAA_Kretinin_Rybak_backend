@@ -21,12 +21,12 @@ public class UserController {
     @Autowired
     private ContactService contactService;
 
-    @GetMapping("/getUsers")
+/*    @GetMapping("/getUsers")
     public List<User> getAllUsers() {
         return userService.findAllUsers();
-    }
+    }*/
 
-    @GetMapping("/getUser/{id}")
+    /*@GetMapping("/getUser/{id}")
     public ResponseEntity<User> getUser(@PathVariable(value = "id") Long userID)
             throws ResourceNotFoundException{
         try {
@@ -35,16 +35,16 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
 
     @GetMapping("/getUser")
-    public ResponseEntity<User> getUserByLogin(@RequestParam String login)
+    public ResponseEntity<User> getUserByToken(@RequestHeader(value = "Authorization") String token)
             throws ResourceNotFoundException {
         try {
-            User user = userService.getUserByLogin(login);
+            User user = userService.getUserById(TokenManager.getIdByToken(token));
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -57,7 +57,7 @@ public class UserController {
             User saved = userService.saveUser(user);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -79,7 +79,7 @@ public class UserController {
                 throw new ResourceNotFoundException("Not found");
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -88,12 +88,12 @@ public class UserController {
                            @RequestHeader(value = "Authorization") String token) {
         try {
             if (user == null) { // if json body of request is empty
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             User edit_user = userService.getUserById(TokenManager.getIdByToken(token));
             user.setUser_role(null);
             if (user.getUser_role() != null && !user.getUser_role().equals(edit_user.getUser_role())) { // if we want to change user's role -> error
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             if (user.getLogin() != null) {
                 edit_user.setLogin(user.getLogin());
@@ -113,7 +113,7 @@ public class UserController {
             edit_user = userService.updateUser(edit_user);
             return new ResponseEntity<>(edit_user, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

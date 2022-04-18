@@ -35,10 +35,10 @@ public class MealController {
                 Meal result = mealService.saveMeal(meal);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -49,7 +49,7 @@ public class MealController {
             Meal meal = mealService.getMealById(mealID);
             return new ResponseEntity<>(meal, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -62,10 +62,10 @@ public class MealController {
                 mealService.deleteMeal(mealID);
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -76,7 +76,7 @@ public class MealController {
         try {
             if (TokenManager.validToken(token, "manager")) {
                 if (meal == null) { // if json body of request is empty
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 Meal edit_meal = mealService.getMealById(mealID);
                 if (meal.getName() != null) {
@@ -94,11 +94,11 @@ public class MealController {
                 edit_meal = mealService.saveMeal(edit_meal);
                 return new ResponseEntity<>(edit_meal, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
 
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

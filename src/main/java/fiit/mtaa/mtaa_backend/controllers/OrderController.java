@@ -43,38 +43,42 @@ public class OrderController {
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @PostMapping("/addOrder")
-    public JSONObject addOrder(@RequestParam List<Long> mealsId,
+    public Object addOrder(@RequestParam List<Long> mealsId,
                                @RequestHeader(value="Authorization") String token,
                                @RequestParam boolean pay_by_cash) {
-        User user = userService.getUserById(TokenManager.getIdByToken(token));
-        List<Meal> order_meals = new ArrayList<>();
-        for (Long id : mealsId){
-            order_meals.add(mealService.getMealById(id));
-        }
-        Order order = new Order();
-        order.setUser(user);
-        order.setPay_by_cash(pay_by_cash);
-        Integer price = 0;
-        for (Meal meal : order_meals){
-            price += meal.getPrice();
-        }
-        order.setPrice(price);
-        Order result = orderService.saveOrder(order);
-        for (Meal meal : order_meals){
-            orderMealService.saveOrderMeal(new OrderMeal().setDependencies(meal, result));
-        }
+        if (TokenManager.validToken(token, "guest")) {
+            User user = userService.getUserById(TokenManager.getIdByToken(token));
+            List<Meal> order_meals = new ArrayList<>();
+            for (Long id : mealsId){
+                order_meals.add(mealService.getMealById(id));
+            }
+            Order order = new Order();
+            order.setUser(user);
+            order.setPay_by_cash(pay_by_cash);
+            Integer price = 0;
+            for (Meal meal : order_meals){
+                price += meal.getPrice();
+            }
+            order.setPrice(price);
+            Order result = orderService.saveOrder(order);
+            for (Meal meal : order_meals){
+                orderMealService.saveOrderMeal(new OrderMeal().setDependencies(meal, result));
+            }
 
-        JSONObject jo = new JSONObject();
-        jo.put("price", result.getPrice());
-        jo.put("user", result.getUser().getLogin());
+            JSONObject jo = new JSONObject();
+            jo.put("price", result.getPrice());
+            jo.put("user", result.getUser().getLogin());
+            jo.put("pay_by_cash", pay_by_cash);
 
-
-        return jo;
+            return new ResponseEntity<>(jo, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @DeleteMapping("/delOrder/{id}")
@@ -84,7 +88,7 @@ public class OrderController {
             orderService.deleteOrder(orderID);
             return new ResponseEntity<>("Deleted", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -103,10 +107,10 @@ public class OrderController {
                 jo.put("done", order.getDone());
                 return new ResponseEntity<>(jo, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -127,10 +131,10 @@ public class OrderController {
                 jo.put("done", edit_order.getDone());
                 return new ResponseEntity<>(jo, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -151,10 +155,10 @@ public class OrderController {
                 }
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
