@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Table(name="meals")
@@ -26,4 +28,11 @@ public class Meal {
 
     @Column(name="photo")
     private byte[] photo;
+
+    @OneToMany(mappedBy="meal", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OrderMeal> orderMeals = new ArrayList<>();
+
+    public Object clone()throws CloneNotSupportedException{
+        return super.clone();
+    }
 }

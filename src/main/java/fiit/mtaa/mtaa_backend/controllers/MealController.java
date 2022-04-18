@@ -3,6 +3,7 @@ package fiit.mtaa.mtaa_backend.controllers;
 import fiit.mtaa.mtaa_backend.models.Meal;
 import fiit.mtaa.mtaa_backend.services.MealService;
 import fiit.mtaa.mtaa_backend.artifacts_data.TokenManager;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,8 +21,19 @@ public class MealController {
     private MealService mealService;
 
     @GetMapping("/getMeals")
-    public List<Meal> getAllMeals() {
-        return mealService.getAllMeals();
+    public Object getAllMeals() {
+        List<Meal> result = mealService.getAllMeals();
+        List<JSONObject> resJson = new ArrayList<>();
+        for (Meal meal : result) {
+            JSONObject tmp = new JSONObject();
+            tmp.put("id", meal.getId());
+            tmp.put("price", meal.getPrice());
+            tmp.put("description", meal.getDescription());
+            tmp.put("name", meal.getName());
+            tmp.put("photo", meal.getPhoto());
+            resJson.add(tmp);
+        }
+        return new ResponseEntity<>(resJson, HttpStatus.OK);
     }
 
     @PostMapping("/addMeal")
@@ -33,7 +47,13 @@ public class MealController {
                     meal.setPhoto(file);
                 }
                 Meal result = mealService.saveMeal(meal);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                JSONObject jo = new JSONObject();
+                jo.put("id", result.getId());
+                jo.put("price", result.getPrice());
+                jo.put("description", result.getDescription());
+                jo.put("name", result.getName());
+                jo.put("photo", result.getPhoto());
+                return new ResponseEntity<>(jo, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -43,11 +63,17 @@ public class MealController {
     }
 
     @GetMapping("/getMeal/{id}")
-    public ResponseEntity<Meal> getMealById(@PathVariable(value = "id") Long mealID)
+    public ResponseEntity<JSONObject> getMealById(@PathVariable(value = "id") Long mealID)
             throws ResourceNotFoundException {
         try {
             Meal meal = mealService.getMealById(mealID);
-            return new ResponseEntity<>(meal, HttpStatus.OK);
+            JSONObject jo = new JSONObject();
+            jo.put("id", meal.getId());
+            jo.put("price", meal.getPrice());
+            jo.put("description", meal.getDescription());
+            jo.put("name", meal.getName());
+            jo.put("photo", meal.getPhoto());
+            return new ResponseEntity<>(jo, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -70,7 +96,8 @@ public class MealController {
     }
 
     @PutMapping("/editMeal/{id}")
-    public Object editMeal(@RequestBody (required=false) Meal meal,
+    public Object editMeal(@ModelAttribute Meal meal,
+                           @RequestPart(name="file", required = false) byte[] file,
                            @PathVariable(value = "id") Long mealID,
                            @RequestHeader(value="Authorization") String token) {
         try {
@@ -92,7 +119,15 @@ public class MealController {
                     edit_meal.setPhoto(meal.getPhoto());
                 }
                 edit_meal = mealService.saveMeal(edit_meal);
-                return new ResponseEntity<>(edit_meal, HttpStatus.OK);
+
+                JSONObject jo = new JSONObject();
+                jo.put("id", edit_meal.getId());
+                jo.put("price", edit_meal.getPrice());
+                jo.put("description", edit_meal.getDescription());
+                jo.put("name", edit_meal.getName());
+                jo.put("photo", edit_meal.getPhoto());
+
+                return new ResponseEntity<>(jo, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
