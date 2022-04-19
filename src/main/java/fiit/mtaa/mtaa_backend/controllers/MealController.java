@@ -115,8 +115,8 @@ public class MealController {
                 if (meal.getPrice() != null) {
                     edit_meal.setPrice(meal.getPrice());
                 }
-                if (meal.getPhoto() != null) {
-                    edit_meal.setPhoto(meal.getPhoto());
+                if (file != null) {
+                    edit_meal.setPhoto(file);
                 }
                 edit_meal = mealService.saveMeal(edit_meal);
 
